@@ -1,1 +1,21 @@
+//This is the test for macro test in C language.
+//For example, "-Dp1=0" in makefile.
 
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()
+{
+    #ifdef p1
+    printf("Hello p1\n");
+    #else
+    printf("Hello p2\n");
+    #endif
+
+    #if p1
+    printf("hello p1 = 1\n");
+    #endif
+
+    return 0;
+
+}
