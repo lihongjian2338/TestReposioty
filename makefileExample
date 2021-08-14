@@ -1,1 +1,78 @@
+//This a makefile test. include three makefile, main makefile, makefie in subdir, test.mk
+//The usage is "make -C subdir"、"include test.mk"
 
+1.main makefile
+include test.mk
+
+objects:=$(wildcard ./subdir/*.o)
+objects2:=$(wildcard test*)
+
+objects3=foo.o bar.o
+
+all:
+	@echo "this is test"
+	echo  "two $(obj)"
+	@echo "threee $(obj)"
+	@echo "44 $(objects)"
+	@echo "55 $(objects2)"
+
+
+exec:
+
+	@cd /home/wanji/work
+	@pwd
+
+exec_test:
+	cd /home/wanji/work; pwd
+
+MAKE:=make
+VARIBALE:=value
+export VARIBALE
+
+subsystem_test1:
+	cd subdir && $(MAKE)
+
+subsystem_test2:
+	$(MAKE) -C subdir
+
+y:=$(x) bar
+x:=foo
+
+VAR:
+	echo "$(y)"
+	echo "$(x)"
+
+	
+FOO?=test
+FOO?=bar
+VAR2:
+	@echo "$(FOO)"
+
+dd:=a.o b.o c.o
+ee:=$(dd:.o=.c)
+
+ff:=d.o e.o f.o
+gg:=$(ff:%.o=%.c)
+
+VAR3:
+	@echo "$(dd)"
+	@echo "$(ee)"
+	@echo "$(ff)"
+	@echo "$(gg)"
+	
+
+.PHONY:clean
+clean:
+	-rm -f edit file.o *.o
+
+
+2.makefile in subdir
+all:
+	echo "this is dir:subdir"
+	echo "$(VARIBALE)"
+
+	@echo "$(CC)"
+	@echo "$(CXX)"
+  
+ 3. test.mk
+ obj=file.o test.o
