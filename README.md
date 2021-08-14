@@ -26,3 +26,9 @@
 #7、libevent  the C net lib, mianly for socket
 
 #8、muduo  the c++ net lib, mainly for socket
+
+#9、cppcheck  the c++ code static check tool
+
+#10、lmdb the key-value database in C from geogle
+
+#11、tinyhttpd  the tiny http server and client in C language, it is 20 years old
