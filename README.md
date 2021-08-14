@@ -18,3 +18,11 @@
 #3、valgrind   the memory check tool in linux
 
 #4、tiny CC    the tiny C compiler, you can use it to learn the compiler
+
+#5、apr    the  tool from the Apache source code, include thread pool、 memory pool et.
+
+#6、GuiLite   the GUI open source, you can use it in stm32.
+
+#7、libevent  the C net lib, mianly for socket
+
+#8、muduo  the c++ net lib, mainly for socket
