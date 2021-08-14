@@ -1,0 +1,158 @@
+//This is a example about vector test.
+
+#include<vector>
+#include<iostream>
+#include <iostream>
+#include <stdint.h>
+#include <list>
+#include <vector>
+#include <map>
+#include <mutex>
+#include <condition_variable>
+#include <chrono>
+#include <algorithm>
+#include <thread>
+
+#include <unistd.h>
+
+using namespace std;
+
+#define NET_QUEUE_SIZE 10
+
+typedef struct _tRcvInfo{
+    int priority;
+    int m_num;
+}tRcvInfo;
+
+typedef int PRIORITY; //0 is highest level
+typedef std::vector<tRcvInfo *> MSG_QUEUE;
+
+static std::mutex mtx;
+static std::condition_variable cv;
+
+static std::map<PRIORITY, MSG_QUEUE> PriorityQueue{
+    {255, std::vector<tRcvInfo *>{}},
+    {223, std::vector<tRcvInfo *>{}},
+    {191, std::vector<tRcvInfo *>{}},
+    {159, std::vector<tRcvInfo *>{}},
+    {127, std::vector<tRcvInfo *>{}},
+    {95, std::vector<tRcvInfo *>{}},
+    {63, std::vector<tRcvInfo *>{}},
+    {31, std::vector<tRcvInfo *>{}}};
+
+static int indexArray[] = {255, 223, 191, 159, 127, 95, 63, 31};
+
+int PushDataIntoNetLayerPriorityQueue2(tRcvInfo *pdata)
+{
+    {
+        std::unique_lock<std::mutex> lk(mtx);
+        try
+        {
+            if (PriorityQueue.at(pdata->priority).size() < NET_QUEUE_SIZE)
+            {
+                PriorityQueue.at(pdata->priority).push_back(pdata);
+            }
+            else
+            {
+                cout<<endl<<"<-队列满-->PriorityQueue size:"<<PriorityQueue.at(pdata->priority).size()<<endl;
+
+                tRcvInfo *p = PriorityQueue.at(pdata->priority).front();
+                free(p);
+                PriorityQueue.at(pdata->priority).erase(PriorityQueue.at(pdata->priority).begin());
+                //PriorityQueue.at(pdata->priority).insert(PriorityQueue.at(pdata->priority).begin(), pdata);
+                PriorityQueue.at(pdata->priority).push_back(pdata);
+            }
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << e.what() << '\n';
+            free(pdata);
+            return -1;
+        }
+    }
+    cv.notify_all();
+    return 0;
+}
+
+tRcvInfo *GetDataFromNetLayerPriorityQueue2()
+{
+    std::unique_lock<std::mutex> lk(mtx);
+    cv.wait(lk, []() {
+        for (auto &it : PriorityQueue)
+        {
+            if (!it.second.empty())
+            {
+                return true;
+            }
+        }
+        return false;
+    });
+
+    tRcvInfo *pdata = NULL;
+    int ArraySize = sizeof(indexArray) / sizeof(indexArray[0]);
+    for (int i = 0; i < ArraySize; i++)
+    {
+        if (!PriorityQueue.at(indexArray[i]).empty())
+        {
+            pdata = PriorityQueue.at(indexArray[i]).front();
+            PriorityQueue.at(indexArray[i]).erase(PriorityQueue.at(indexArray[i]).begin());
+            break;
+        }
+    }
+    return pdata;
+}
+
+int num = 0;
+
+void producer()
+{
+    while(1)
+    {
+        tRcvInfo *pRcvInfo = (tRcvInfo *)calloc(1, sizeof(*pRcvInfo));
+        pRcvInfo->priority = 255;
+        pRcvInfo->m_num = num;
+        num ++;
+
+        cout<<"producer add m_num:"<<pRcvInfo->m_num<<endl;
+        PushDataIntoNetLayerPriorityQueue2(pRcvInfo); 
+        if(num < 30)
+        {   
+            sleep(1);
+        }
+        else
+        {
+            sleep(8);
+        }
+    }
+}
+
+void consumer()
+{
+    while(1)
+    { 
+        tRcvInfo *pRcvInfo = GetDataFromNetLayerPriorityQueue2();
+        cout<<"---->consumer get num:"<<pRcvInfo->m_num<<endl;
+        if(pRcvInfo) free(pRcvInfo);
+
+        sleep(4);
+    }
+}
+
+
+
+
+int main()
+{
+
+    cout<<"two thread start:"<<endl;
+
+    std::thread t1(producer);
+    std::thread t2(consumer);
+
+    t1.join();
+    t2.join();
+
+    cout<<"two thread end:"<<endl;
+
+    return 0;
+}
