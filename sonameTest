@@ -1,1 +1,7 @@
+//This is a test about soname parameter in gcc.
+//First, the lib*.so have a soname when make.
+//Second, the main app should find the lib*.so when run
+
+//third, the main.c is the main app.
+//fourth, module.c and module.h is used to create the lib*.so with soname parameter.
 
