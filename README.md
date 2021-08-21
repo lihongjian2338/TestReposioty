@@ -32,3 +32,14 @@
 #10、lmdb the key-value database in C from geogle
 
 #11、tinyhttpd  the tiny http server and client in C language, it is 20 years old
+
+#12、uthash  the C macro header for hash table or list .et
+
+#13、asn1c   the .asn file to C code tool by C compiler
+
+#14、iniparser the .ini file parser tool by c++
+
+#15、phato-mqtt  the mqtt protocol lib
+
+#16、SDS  the c string tool from redis 
+
