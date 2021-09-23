@@ -1,0 +1,152 @@
+//This is the gcc and g++ compile test
+1、cxxtest.cpp file
+#include <iostream>
+#include "ctest.h"
+
+using namespace std;
+
+int main()
+{
+    cout<<"main start"<<endl;
+    printHello();
+    cout<<"main end"<<endl;
+}
+
+2、ctest.c file
+#include <stdio.h>
+#include "ctest.h"
+
+void printHello()
+{
+    printf("This is the c file\n");
+}
+
+3、ctest.h file
+#ifdef __cplusplus 
+extern "C" { 
+#endif
+
+void printHello();
+
+#ifdef __cplusplus 
+}
+#endif
+
+4、makefile file 
+#设置当前路径
+
+CUR_PATH = .
+
+#递归若干层的路径
+
+DIRS = $(shell find $(CUR_PATH) -maxdepth 5 -type d)
+
+#递归找到所有与规则匹配的文件
+
+SRC = $(foreach dir, $(DIRS), $(wildcard $(dir)/*.cpp))
+
+CSRC = $(foreach dir, $(DIRS), $(wildcard $(dir)/*.c))
+
+
+
+CFLAGS += -DMG_ENABLE_HTTP_STREAMING_MULTIPART -DMG_ENABLE_CALLBACK_USERDATA -W -DNONUTF8CONV -DELPP_NO_DEFAULT_LOG_FILE '-Wno-implicit-fallthrough'
+
+LIBS = -ldl -lpthread
+
+
+
+
+
+#两种改变变量后缀的方法
+
+OBJS = ${SRC:%.cpp=%.o}
+
+COBJS = ${CSRC:.c=.o}
+
+
+
+#INC = -l /opt/imx6/sysroots/armv7at2hf-neon-fslc-linux-gnueabi/usr/include \
+
+#-l /opt/imx6/sysroots/armv7at2hf-neon-fslc-linux-gnueabi/usr/include/c++/7.3.0
+
+#CC = gcc
+
+#CXX = arm-fslc-linux-gnueabi-g++
+
+
+
+ver = debug
+
+
+
+ifeq ($(ver), debug)
+
+
+
+all: ${OBJS} ${COBJS}
+
+	$(CXX) $(CFLAGS) $(INC) -g -std=c++14 -Wall $^ -o webdev.debug $(LIBS)
+
+	
+
+	#编译所有源文件
+
+${OBJS}:%.o:%.cpp
+
+	$(CXX) $(CFLAGS) $(INC) -g -std=c++14 -Wall -c $< -o $@ $(LIBS)
+
+
+
+${COBJS}:%.o:%.c
+
+	$(CC) $(CFLAGS) $(INC) -g -std=c11 -Wall -c $< -o $@ $(LIBS)
+
+	
+
+else
+
+all: ${OBJS} ${COBJS}
+
+	$(CXX) $(CFLAGS) $(INC) -std=c++14 -Wall $^ -o webdev.release $(LIBS)
+
+	
+
+#编译所有源文件
+
+${OBJS}:%.o:%.cpp
+
+	$(CXX) $(CFLAGS) $(INC) -std=c++14 -Wall -c $< -o $@ $(LIBS)
+
+
+
+${COBJS}:%.o:%.c
+
+	$(CC) $(CFLAGS) $(INC) -std=c11 -Wall -c $< -o $@ $(LIBS)
+
+	
+
+endif
+
+
+
+
+
+
+
+
+
+.PHONY: clean test
+
+clean:
+
+	rm -rf ${OBJS} test 
+
+
+
+test:
+
+	@echo "test print---------------"
+
+	@echo "OBJS:" ${OBJS}
+
+	@echo "test print over----------
