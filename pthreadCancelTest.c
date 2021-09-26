@@ -1,3 +1,4 @@
+//This is the demo about pthread_cancel, you can use this method cancel while(1) pthread
 #include<stdlib.h>
 #include<stdio.h>
 #include<unistd.h>
