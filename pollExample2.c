@@ -42,6 +42,16 @@ int main(int argc, char *argv[])
     while(1)
     {
         int ret = poll(client, maxi+1, -1);//对加入poll结构体数组所有元素进行监测
+        if(ret<0)
+        {
+            printf("poll error\n");
+            continue;
+        }
+        else if(ret==0)
+        {
+            printf("time out\n");
+            continue;
+        }
 
         //5.1监测sockfd(监听套接字)是否存在连接
         if((client[0].revents & POLLIN) == POLLIN )
