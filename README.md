@@ -61,3 +61,4 @@
 
 #25 minIni   the ini praser open tool
 
+#26 s-tui  the python lib about cpu capaticy。
